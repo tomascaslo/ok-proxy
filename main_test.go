@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
-	"reflect"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
-type mockErrorHandler struct{
+type mockErrorHandler struct {
 	called bool
 }
 
@@ -18,8 +18,8 @@ func (meh *mockErrorHandler) ServerErrorHandler(w http.ResponseWriter, r *http.R
 	meh.called = true
 }
 
-type mockReverseProxy struct{
-	URL string
+type mockReverseProxy struct {
+	URL   string
 	calls []string
 }
 
@@ -31,7 +31,7 @@ func (mrp *mockReverseProxy) GetProxyURL() string {
 	return mrp.URL
 }
 
-func (mrp *mockReverseProxy) serveReverseProxy(http.ResponseWriter, *http.Request, ErrorHandler)  {
+func (mrp *mockReverseProxy) serveReverseProxy(http.ResponseWriter, *http.Request, ErrorHandler) {
 	mrp.calls = append(mrp.calls, "serveReverseProxy")
 }
 
@@ -41,15 +41,15 @@ func (mrp *mockReverseProxy) decodeURLFromBody(r *http.Request, errorHandler Err
 }
 
 func TestPathRequestProxyHandler(t *testing.T) {
-	tests := []struct{
-		name string
-		w *httptest.ResponseRecorder
-		r *http.Request
-		okProxy *OKProxy
-		path string
-		errorHandler *mockErrorHandler
-		expectedURLPath string
-		expectedErrorCalled bool
+	tests := []struct {
+		name                            string
+		w                               *httptest.ResponseRecorder
+		r                               *http.Request
+		okProxy                         *OKProxy
+		path                            string
+		errorHandler                    *mockErrorHandler
+		expectedURLPath                 string
+		expectedErrorCalled             bool
 		expectedServeReverseProxyCalled bool
 	}{
 		{
@@ -102,14 +102,14 @@ func TestPathRequestProxyHandler(t *testing.T) {
 }
 
 func TestPayloadRequestProxyHandler(t *testing.T) {
-	tests := []struct{
-		name string
-		w *httptest.ResponseRecorder
-		r *http.Request
-		okProxy *OKProxy
-		errorHandler *mockErrorHandler
-		expectedURLPath string
-		expectedErrorHandlerCalled bool
+	tests := []struct {
+		name                            string
+		w                               *httptest.ResponseRecorder
+		r                               *http.Request
+		okProxy                         *OKProxy
+		errorHandler                    *mockErrorHandler
+		expectedURLPath                 string
+		expectedErrorHandlerCalled      bool
 		expectedServeReverseProxyCalled bool
 	}{
 		{
@@ -170,13 +170,13 @@ func TestPayloadRequestProxyHandler(t *testing.T) {
 }
 
 func TestServeReverseProxy(t *testing.T) {
-	type url struct{
-		host string
+	type url struct {
+		host   string
 		scheme string
 	}
-	type requestData struct{
+	type requestData struct {
 		headerForwardedHost string
-		host string
+		host                string
 	}
 
 	createRequest := func(includeHost bool) *http.Request {
@@ -186,14 +186,14 @@ func TestServeReverseProxy(t *testing.T) {
 		}
 		return r
 	}
-	tests := []struct{
-		name string
-		w *httptest.ResponseRecorder
-		r *http.Request
-		proxy *reverseProxy
-		errorHandler *mockErrorHandler
-		expectedURL *url
-		expectedRequestData *requestData
+	tests := []struct {
+		name                       string
+		w                          *httptest.ResponseRecorder
+		r                          *http.Request
+		proxy                      *reverseProxy
+		errorHandler               *mockErrorHandler
+		expectedURL                *url
+		expectedRequestData        *requestData
 		expectedErrorHandlerCalled bool
 	}{
 		{
@@ -240,13 +240,13 @@ func TestServeReverseProxy(t *testing.T) {
 }
 
 func TestDecodeURLFromBody(t *testing.T) {
-	tests := []struct{
-		name string
-		r *http.Request
-		url string
-		errorHandler *mockErrorHandler
+	tests := []struct {
+		name          string
+		r             *http.Request
+		url           string
+		errorHandler  *mockErrorHandler
 		expectedProxy *OKProxy
-		expectedBody []byte
+		expectedBody  []byte
 		expectedError error
 	}{
 		{
@@ -265,7 +265,7 @@ func TestDecodeURLFromBody(t *testing.T) {
 			&mockErrorHandler{},
 			&OKProxy{&reverseProxy{"127.0.0.1:8080"}},
 			[]byte(`{"proxyURL":"127.0.0.1:8080}`),
-            errors.New("unexpected end of JSON input"),
+			errors.New("unexpected end of JSON input"),
 		},
 	}
 

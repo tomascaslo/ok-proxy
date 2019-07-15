@@ -18,7 +18,7 @@ type OKProxy struct {
 }
 
 // reverseProxy stores the proxy URL and access methods.
-type reverseProxy struct{
+type reverseProxy struct {
 	URL string `json:"proxyURL"`
 }
 
@@ -63,8 +63,8 @@ func (p *OKProxy) PayloadRequestProxyHandler(errorHandler ErrorHandler) http.Han
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := p.proxy.decodeURLFromBody(r, errorHandler)
 		if err != nil {
-            errorHandler.ServerErrorHandler(w, r, err)
-            return
+			errorHandler.ServerErrorHandler(w, r, err)
+			return
 		}
 		if p.proxy.GetProxyURL() == "" {
 			errorHandler.ServerErrorHandler(w, r, errors.New("ProxyURL needs to be set in request body at proxyURL field"))
@@ -74,7 +74,7 @@ func (p *OKProxy) PayloadRequestProxyHandler(errorHandler ErrorHandler) http.Han
 	})
 }
 
-func (rp *reverseProxy) SetProxyURL(url string)  {
+func (rp *reverseProxy) SetProxyURL(url string) {
 	rp.URL = url
 }
 
@@ -121,4 +121,3 @@ func (rp *reverseProxy) decodeURLFromBody(r *http.Request, errorHandler ErrorHan
 
 	return nil
 }
-
