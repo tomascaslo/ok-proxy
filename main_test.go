@@ -35,6 +35,11 @@ func (mrp *mockReverseProxy) serveReverseProxy(http.ResponseWriter, *http.Reques
 	mrp.calls = append(mrp.calls, "serveReverseProxy")
 }
 
+func (mrp *mockReverseProxy) decodeURLFromBody(r *http.Request, errorHandler ErrorHandler) error {
+	mrp.calls = append(mrp.calls, "decodeURLFromBody")
+	return nil
+}
+
 func TestPathRequestProxyHandler(t *testing.T) {
 	tests := []struct{
 		name string
@@ -111,7 +116,7 @@ func TestPayloadRequestProxyHandler(t *testing.T) {
 			"Sets proxy url and forwards request",
 			httptest.NewRecorder(),
 			httptest.NewRequest("GET", "/forward/api", bytes.NewReader([]byte(`{"proxyURL":"127.0.0.1:8080"}`))),
-			&OKProxy{&mockReverseProxy{}},
+			&OKProxy{&mockReverseProxy{"127.0.0.1:8080", []string{}}},
 			&mockErrorHandler{},
 			"/forward/api",
 			false,
@@ -121,6 +126,16 @@ func TestPayloadRequestProxyHandler(t *testing.T) {
 			"Errors on decoding",
 			httptest.NewRecorder(),
 			httptest.NewRequest("GET", "/forward/api", bytes.NewReader([]byte(`{"proxyURL":"127.0.0.1:8080"`))),
+			&OKProxy{&mockReverseProxy{}},
+			&mockErrorHandler{},
+			"/forward/api",
+			true,
+			false,
+		},
+		{
+			"Errors on empty proxy",
+			httptest.NewRecorder(),
+			httptest.NewRequest("GET", "/forward/api", bytes.NewReader([]byte(`{"proxyURL":"127.0.0.1:8080"}`))),
 			&OKProxy{&mockReverseProxy{}},
 			&mockErrorHandler{},
 			"/forward/api",
@@ -257,7 +272,7 @@ func TestDecodeURLFromBody(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &OKProxy{&reverseProxy{tt.url}}
-			err := p.decodeURLFromBody(tt.r, tt.errorHandler)
+			err := p.proxy.decodeURLFromBody(tt.r, tt.errorHandler)
 
 			if err != nil && err.Error() != tt.expectedError.Error() {
 				t.Errorf("Expected %q got %q", tt.expectedError.Error(), err.Error())
@@ -287,4 +302,3 @@ func stringInSlice(s string, sl []string) bool {
 	}
 	return false
 }
-
