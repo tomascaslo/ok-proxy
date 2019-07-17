@@ -1,5 +1,5 @@
 // Package OKProxy provides a simple proxy using httputil.NewSingleHostReverseProxy.
-package main
+package okproxy
 
 import (
 	"bytes"

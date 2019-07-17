@@ -12,16 +12,17 @@ package main
 import (
 	"log"
 	"net/http"
-	okproxy "github.com/tomascaslo/ok-proxy"
+	"github.com/tomascaslo/ok-proxy"
 )
 
-type errorHandler struct{}
+type application struct{}
 
-func (eh *errorHandler) ServerErrorHandler(http.ResponseWriter, *http.Request, error) {...}
+func (app *application) ServerErrorHandler(w http.ResponseWriter, r *http.Request, err error) { return }
 
 func main() {
+   app := &application{}
    proxy := okproxy.New("localhost:3000")
-   http.Handle("/forward", proxy.PathRequestProxyHandler("/forward", &errorHandler{})) 
+   http.Handle("/forward", proxy.PathRequestProxyHandler("/forward", app)) 
    
    log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -34,16 +35,17 @@ package main
 import (
 	"log"
 	"net/http"
-	okproxy "github.com/tomascaslo/ok-proxy"
+	"github.com/tomascaslo/ok-proxy"
 )
 
-type errorHandler struct{}
+type application struct{}
 
-func (eh *errorHandler) ServerErrorHandler(http.ResponseWriter, *http.Request, error) {...}
+func (app *application) ServerErrorHandler(w http.ResponseWriter, r *http.Request, err error) { return }
 
 func main() {
+   app := &application{}
    proxy := okproxy.New("")
-   http.Handle("/forward", proxy.PayloadRequestProxyHandler(&errorHandler{})) 
+   http.Handle("/forward", proxy.PayloadRequestProxyHandler(app)) 
    
    log.Fatal(http.ListenAndServe(":8080", nil))
 }
